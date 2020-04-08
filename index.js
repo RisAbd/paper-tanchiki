@@ -149,11 +149,13 @@ FirePoint.prototype = {
 function Game(fieldEl) {
 
     const STANDART_FIELD = {width: 80, height: 70};
+    const UNITS_COUNT = 8;
 
     this._fieldEl = fieldEl;
 
-    const fpUnits = new Array(4).fill(0).map(() => Unit.random(STANDART_FIELD));
-    const spUnits = new Array(4).fill(0).map(() => Unit.random(STANDART_FIELD));
+
+    const fpUnits = new Array(UNITS_COUNT).fill(0).map(() => Unit.random(STANDART_FIELD));
+    const spUnits = new Array(UNITS_COUNT).fill(0).map(() => Unit.random(STANDART_FIELD));
 
     this.player1 = new Player('Player 1', fpUnits, Object.assign({}, STANDART_FIELD));
     const pfEl = this._fieldEl.querySelector('#p1-field');
