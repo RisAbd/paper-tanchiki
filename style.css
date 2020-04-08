@@ -13,6 +13,8 @@ body {
 }
 
 #game-field {
+    position: relative;
+
     display: block;
 
     width: 80vw;
@@ -22,6 +24,8 @@ body {
     margin-left: 10vw;
 
     background-color: red;
+
+    cursor: none;
 }
 
 .player-field {
@@ -37,7 +41,8 @@ body {
     color: orangered;
 }
 .player-field[data-current=false] {
-    border: solid 3px red;
+    outline: solid 2px red;
+    z-index: 10;
 }
 
 .player-field[data-winner=true][data-current=true] .player-name {
@@ -55,14 +60,15 @@ body {
 
 .field-title {
     position: absolute;
-    top: -3rem;
+    top: 0;
+    transform: translateY(-100%);
     font-size: 2rem;
+    pointer-events: none;
 }
 
 .units-counter {
     font-size: 3rem;
     color: orangered;
-    top: -4rem;
     padding: 0 1rem;
 }
 
@@ -100,4 +106,38 @@ body {
 .fire-point[data-mortal=true] {
     background-color: red;
     border: purple solid 1px;
+}
+
+
+#hint-aim, #mouse-aim {
+    position: absolute;
+    z-index: 99999;
+    pointer-events: none;
+    color: black;
+}
+
+#hint-aim {
+    color: red;
+}
+
+#hint-aim.disabled {
+    display: none;
+}
+
+.aim-axis {
+    display: block;
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+.aim-axis.vertical {
+    width: 1px;
+    height: 20px;
+    background: currentColor;
+}
+
+.aim-axis.horizontal {
+    width: 20px;
+    height: 1px;
+    background: currentColor;
 }

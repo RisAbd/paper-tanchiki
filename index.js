@@ -104,6 +104,10 @@ Unit.prototype = {
     },
 };
 
+Unit.random = ({width, height}) => {
+    return new Unit(Math.random() * (width-2), Math.random() * (height-2));
+}
+
 
 function FirePoint(x, y, el = null, isMortal = false) {
     this.x = x;
@@ -129,18 +133,8 @@ function Game(fieldEl) {
 
     this._fieldEl = fieldEl;
 
-    const fpUnits = [
-        new Unit(20, 40),
-        new Unit(10, 20),
-        new Unit(5, 8),
-        new Unit(30, 11),
-    ];
-    const spUnits = [
-        new Unit(20, 40),
-        new Unit(10, 20),
-        new Unit(21, 20),
-        new Unit(30, 11),
-    ];
+    const fpUnits = new Array(4).fill(0).map(() => Unit.random(STANDART_FIELD));
+    const spUnits = new Array(4).fill(0).map(() => Unit.random(STANDART_FIELD));
 
     this.player1 = new Player('Player 1', fpUnits, Object.assign({}, STANDART_FIELD));
     const pfEl = this._fieldEl.querySelector('#p1-field');
@@ -223,4 +217,31 @@ Game.prototype = {
 const fEl = document.querySelector('#game-field');
 const game = new Game(fEl);
 print(game);
-print(game+'')
+print(game+'');
+
+
+const mouseAim = document.querySelector('#mouse-aim');
+const hintAim = document.querySelector('#hint-aim');
+
+const DISABLED_CLS = 'disabled';
+
+fEl.addEventListener('mousemove', function(e) {
+
+    const { x, y, width, height } = fEl.getBoundingClientRect();
+
+    if (e.ctrlKey) {
+        if (hintAim.classList.contains(DISABLED_CLS)) {
+            hintAim.classList.remove(DISABLED_CLS);
+        }
+
+        hintAim.style.left = x + (width - e.pageX);
+        hintAim.style.top = e.pageY - y; 
+    } else {
+        if (!hintAim.classList.contains(DISABLED_CLS)) {
+            hintAim.classList.add(DISABLED_CLS);
+        }
+    }
+
+    mouseAim.style.left = e.pageX - x;
+    mouseAim.style.top = e.pageY - y;
+});
