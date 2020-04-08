@@ -11,6 +11,16 @@ function Player(name, units, field) {
     this.firePoints = [];
 }
 Player.prototype = {
+    reset: function () {
+        this.firePoints.forEach(fp => {
+            this._fieldEl.removeChild(fp._el);
+        });
+        this.firePoints = [];
+        this.units.forEach(u => {
+            u.reset();
+            u.randomizePosition(this.field);
+        });
+    },
     toString: function() {
         return `${this.name}`;
     },
@@ -78,6 +88,13 @@ function Unit(x, y, type = 'TANK', isAlive = true) {
     this._el = null;
 }
 Unit.prototype = {
+    reset: function() {
+        this.isAlive = true;
+    },
+    randomizePosition: function({width, height}) {
+        this.x = Math.random() * (width-this.w);
+        this.y = Math.random() * (height-this.h);
+    },
     toString: function () {
         return `T(${this.x}, ${this.y})[${this.isAlive ? '+' : 'X'}]`;
     },
@@ -104,8 +121,10 @@ Unit.prototype = {
     },
 };
 
-Unit.random = ({width, height}) => {
-    return new Unit(Math.random() * (width-2), Math.random() * (height-2));
+Unit.random = (field) => {
+    const u = new Unit(0, 0);
+    u.randomizePosition(field);
+    return u;
 }
 
 
@@ -129,7 +148,7 @@ FirePoint.prototype = {
 
 function Game(fieldEl) {
 
-    const STANDART_FIELD = {width: 40, height: 50};
+    const STANDART_FIELD = {width: 80, height: 70};
 
     this._fieldEl = fieldEl;
 
@@ -146,15 +165,54 @@ function Game(fieldEl) {
     sfEl.addEventListener('click', function(e) {this._onPlayerFieldClick(e, this.player2)}.bind(this));
     this.player2.initElement(sfEl);
 
-    this.currentPlayer = Math.random() < 0.5 ? this.player1 : this.player2;
-    // this.currentPlayer = this.player1;
+    this.reset();
 
-    this.isEnded = false;
+    // reset 
 
-    this.refreshEl();
+    this.onPlayerNameClick = this.onPlayerNameClick.bind(this);
+
+    fieldEl.querySelectorAll('span.player-name').forEach(e => {
+        e.addEventListener('click', this.onPlayerNameClick);
+    });
+
+
+    // aims
+
+    this.mouseAim = fieldEl.querySelector('#mouse-aim');
+    this.hintAim = fieldEl.querySelector('#hint-aim');
+
+    fieldEl.addEventListener('mousemove', (function(e) {
+        const DISABLED_CLS = 'disabled';
+
+        const { x, y, width, height } = fieldEl.getBoundingClientRect();
+
+        if (e.ctrlKey) {
+            if (this.hintAim.classList.contains(DISABLED_CLS)) {
+                this.hintAim.classList.remove(DISABLED_CLS);
+            }
+
+            this.hintAim.style.left = x + (width - e.pageX);
+            this.hintAim.style.top = e.pageY - y; 
+        } else {
+            if (!this.hintAim.classList.contains(DISABLED_CLS)) {
+                this.hintAim.classList.add(DISABLED_CLS);
+            }
+        }
+
+        this.mouseAim.style.left = e.pageX - x;
+        this.mouseAim.style.top = e.pageY - y;
+    }).bind(this));
 }
 
 Game.prototype = {
+
+    reset: function() {
+        this.isEnded = false;
+        this.currentPlayer = Math.random() < 0.5 ? this.player1 : this.player2;
+        this.player1.reset();
+        this.player2.reset();
+        this.refreshEl();
+    },
     _onPlayerFieldClick: function(e, p) {
         // print(p, e);
         const x = p.field.width - (p.field.width * (e.offsetX/e.target.clientWidth));
@@ -211,6 +269,15 @@ Game.prototype = {
         this.player1.refreshEl(this.currentPlayer === this.player1, this.isEnded);
         this.player2.refreshEl(this.currentPlayer === this.player2, this.isEnded);
     },
+    onPlayerNameClick: function(e) {
+        // console.log('onPlayerNameClick', this);
+        e.stopPropagation();
+
+        if (this.isEnded) {
+            this.reset();
+        }
+
+    },
 };
 
 
@@ -218,30 +285,3 @@ const fEl = document.querySelector('#game-field');
 const game = new Game(fEl);
 print(game);
 print(game+'');
-
-
-const mouseAim = document.querySelector('#mouse-aim');
-const hintAim = document.querySelector('#hint-aim');
-
-const DISABLED_CLS = 'disabled';
-
-fEl.addEventListener('mousemove', function(e) {
-
-    const { x, y, width, height } = fEl.getBoundingClientRect();
-
-    if (e.ctrlKey) {
-        if (hintAim.classList.contains(DISABLED_CLS)) {
-            hintAim.classList.remove(DISABLED_CLS);
-        }
-
-        hintAim.style.left = x + (width - e.pageX);
-        hintAim.style.top = e.pageY - y; 
-    } else {
-        if (!hintAim.classList.contains(DISABLED_CLS)) {
-            hintAim.classList.add(DISABLED_CLS);
-        }
-    }
-
-    mouseAim.style.left = e.pageX - x;
-    mouseAim.style.top = e.pageY - y;
-});

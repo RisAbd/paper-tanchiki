@@ -40,13 +40,18 @@ body {
 .player-field[data-current=true] .player-name {
     color: orangered;
 }
+
+.player-field[data-current=true] {
+    /*outline: solid 2px green;*/
+}
+
 .player-field[data-current=false] {
-    outline: solid 2px red;
     z-index: 10;
+    outline: solid 2px red;
 }
 
 .player-field[data-winner=true][data-current=true] .player-name {
-    font-size: 4rem;
+    font-size: 3.3rem;
 }
 
 #p1-field {
@@ -58,12 +63,24 @@ body {
     float: right;
 }
 
-.field-title {
+.player-info {
     position: absolute;
     top: 0;
     transform: translateY(-100%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.field-title {
+    bottom: 0;
     font-size: 2rem;
-    pointer-events: none;
+    /*pointer-events: none;*/
+}
+
+.player-name {
+    margin-left: 16px;
 }
 
 .units-counter {
@@ -87,10 +104,11 @@ body {
 
 .unit {
     background-color: white;
-    border: solid 2px black;
+    border: solid 1px black;
 }
 
 .unit[data-alive=false] {
+    border-style: dashed;
     background-color: red;
 }
 
@@ -117,7 +135,7 @@ body {
 }
 
 #hint-aim {
-    color: red;
+    color: white;
 }
 
 #hint-aim.disabled {
