@@ -126,6 +126,10 @@ body {
     border: purple solid 1px;
 }
 
+.fire-point.own-fire-point {
+    background-color: black;
+}
+
 
 #hint-aim, #mouse-aim {
     position: absolute;

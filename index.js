@@ -54,9 +54,10 @@ Player.prototype = {
             this.firePoints[i].refreshEl(this.field);
         }
     },
-    addFirePoint: function(fp) {
+    addFirePoint: function(fp, own = false) {
         fp._el = document.createElement('span');
         fp._el.className = 'field-object fire-point';
+        if (own) fp._el.classList.toggle('own-fire-point');
         this._fieldEl.appendChild(fp._el);
         this.firePoints.push(fp);
     },
@@ -243,6 +244,7 @@ Game.prototype = {
         const o = this._opponent();
         const firePoint = new FirePoint(x, y);
         o.addFirePoint(firePoint);
+        this.currentPlayer.addFirePoint(new FirePoint(this.currentPlayer.field.width - x, y), true);
         // print(`${this.currentPlayer} firing (${x}, ${y})`);
         let isKilledAnyUnit = false;
         for (let i = 0; i < o.units.length; i++) {
