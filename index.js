@@ -289,3 +289,8 @@ const fEl = document.querySelector('#game-field');
 const game = new Game(fEl);
 print(game);
 print(game+'');
+
+
+screen.orientation.lock("landscape")
+    .then(console.log)
+    .catch(e => undefined);
